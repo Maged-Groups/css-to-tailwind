@@ -1,0 +1,1608 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Migration Guide — Portfolio to Tailwind CSS 4</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style type="text/tailwindcss">
+      @theme {
+        --color-primary: #6366f1;
+        --color-primary-light: #818cf8;
+        --color-primary-dark: #4f46e5;
+        --font-sans: "Inter", system-ui, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
+      }
+      @custom-variant dark (&:where(.dark, .dark *));
+    </style>
+  </head>
+
+  <script>
+    // Apply saved theme before paint to avoid a flash
+    if (localStorage.getItem("guides-theme") === "dark") {
+      document.documentElement.classList.add("dark");
+    }
+  </script>
+  <body
+    class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans antialiased"
+  >
+    <!-- ============ HEADER ============ -->
+    <header
+      class="sticky top-0 z-50 border-b border-slate-200 dark:border-slate-800 bg-slate-50/90 dark:bg-slate-950/90 backdrop-blur-md"
+    >
+      <div
+        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4"
+      >
+        <div class="flex items-center gap-3">
+          <div
+            class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white font-bold text-lg shadow-md"
+          >
+            T
+          </div>
+          <div>
+            <p class="font-bold text-sm leading-tight">
+              Tailwind 4 Migration Guide
+            </p>
+            <p class="text-xs text-slate-500 dark:text-slate-400 leading-tight">
+              Portfolio Project
+            </p>
+          </div>
+        </div>
+        <button
+          id="guide-theme-toggle"
+          class="w-10 h-10 rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-primary transition-colors flex items-center justify-center text-lg"
+          aria-label="Toggle theme"
+        >
+          <span class="hidden dark:inline">☀️</span>
+          <span class="dark:hidden">🌙</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ============ LAYOUT ============ -->
+    <div
+      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12 flex flex-col lg:flex-row gap-8 lg:gap-12"
+    >
+      <!-- ============ SIDEBAR ============ -->
+      <aside class="lg:sticky lg:top-24 lg:h-fit lg:w-[260px] lg:shrink-0">
+        <nav
+          class="lg:border-r lg:dark:border-slate-800 lg:border-slate-200 lg:pr-4"
+        >
+          <p
+            class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3"
+          >
+            Contents
+          </p>
+          <ul class="space-y-1 text-sm">
+            <li>
+              <a
+                href="#overview"
+                class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors"
+                >Overview</a
+              >
+            </li>
+            <li>
+              <a
+                href="#prereq"
+                class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors"
+                >Before You Start</a
+              >
+            </li>
+            <li>
+              <a
+                href="#setup"
+                class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors"
+                >1. Setup</a
+              >
+            </li>
+            <li>
+              <a
+                href="#theme"
+                class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors"
+                >2. @theme</a
+              >
+            </li>
+            <li>
+              <a
+                href="#dark"
+                class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors"
+                >3. Dark Mode</a
+              >
+            </li>
+            <li>
+              <a
+                href="#steps"
+                class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors"
+                >4. Convert Sections</a
+              >
+            </li>
+            <li>
+              <a
+                href="#cheatsheet"
+                class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors"
+                >Cheat Sheet</a
+              >
+            </li>
+            <li>
+              <a
+                href="#checklist"
+                class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors font-semibold text-primary"
+                >✅ Checklist</a
+              >
+            </li>
+            <li>
+              <a
+                href="#js-phase"
+                class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors font-semibold text-primary"
+                >🔌 JS Phase</a
+              >
+            </li>
+            <li>
+              <a
+                href="#troubleshooting"
+                class="block px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors"
+                >Troubleshooting</a
+              >
+            </li>
+          </ul>
+        </nav>
+      </aside>
+
+      <!-- ============ MAIN ============ -->
+      <main class="min-w-0 space-y-16">
+        <!-- ===== HERO ===== -->
+        <section id="overview">
+          <div
+            class="rounded-3xl bg-gradient-to-br from-indigo-500 via-violet-500 to-fuchsia-500 p-8 sm:p-12 text-white shadow-xl"
+          >
+            <p class="text-sm font-semibold opacity-90 mb-2">
+              🚀 Your first Tailwind CSS 4 project
+            </p>
+            <h1 class="text-3xl sm:text-4xl font-bold mb-4 leading-tight">
+              From Plain HTML + CSS<br />to Tailwind CSS 4
+            </h1>
+            <p class="text-white/90 text-lg leading-relaxed max-w-2xl">
+              In this project, you'll convert a <strong>Portfolio</strong> page
+              built with plain HTML and CSS into the same page built entirely
+              with <strong>Tailwind CSS 4</strong>. The conversion only touches
+              styling — the structure and data stay exactly as they are.
+            </p>
+            <div class="mt-6 flex flex-wrap gap-3 text-sm">
+              <span class="px-3 py-1.5 rounded-full bg-white/20 backdrop-blur"
+                >HTML</span
+              >
+              <span class="px-3 py-1.5 rounded-full bg-white/20 backdrop-blur"
+                >CSS → Tailwind 4</span
+              >
+              <span class="px-3 py-1.5 rounded-full bg-white/20 backdrop-blur"
+                >Dark Mode</span
+              >
+              <span class="px-3 py-1.5 rounded-full bg-white/20 backdrop-blur"
+                >Responsive</span
+              >
+              <span class="px-3 py-1.5 rounded-full bg-white/20 backdrop-blur"
+                >JS (later)</span
+              >
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row gap-4 mt-8">
+            <div
+              class="sm:flex-1 rounded-xl p-5 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900"
+            >
+              <p class="text-3xl mb-2">🎯</p>
+              <p class="font-bold mb-1">Goal</p>
+              <p class="text-sm text-slate-600 dark:text-slate-400">
+                Convert the whole page to utilities and delete styles.css
+              </p>
+            </div>
+            <div
+              class="sm:flex-1 rounded-xl p-5 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900"
+            >
+              <p class="text-3xl mb-2">⏱️</p>
+              <p class="font-bold mb-1">Duration</p>
+              <p class="text-sm text-slate-600 dark:text-slate-400">
+                2 – 3 hours of actual work
+              </p>
+            </div>
+            <div
+              class="sm:flex-1 rounded-xl p-5 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900"
+            >
+              <p class="text-3xl mb-2">📦</p>
+              <p class="font-bold mb-1">Deliverable</p>
+              <p class="text-sm text-slate-600 dark:text-slate-400">
+                index.html + structure ready for JavaScript
+              </p>
+            </div>
+          </div>
+
+          <div
+            class="mt-8 rounded-xl p-5 border-2 border-dashed border-primary/40 bg-primary/5"
+          >
+            <p class="font-bold text-primary mb-2">💡 Read this first</p>
+            <p
+              class="text-sm leading-relaxed text-slate-700 dark:text-slate-300"
+            >
+              You're not converting some throwaway design — you're building a
+              <strong>portfolio that will actually be used</strong>. After you
+              learn JavaScript, you'll come back to this file and add just 10
+              lines to make the page <strong>alive</strong> (dark mode works
+              with a click, and filters work with a click). That is the
+              difference between an exercise and a real project.
+            </p>
+          </div>
+        </section>
+
+        <!-- ===== PREREQUISITES ===== -->
+        <section id="prereq">
+          <h2 class="text-2xl sm:text-3xl font-bold mb-2">Before You Start</h2>
+          <p class="text-slate-600 dark:text-slate-400 mb-6">
+            Prepare these before opening VS Code.
+          </p>
+
+          <div
+            class="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden"
+          >
+            <ul class="divide-y divide-slate-200 dark:divide-slate-800">
+              <li class="p-4 flex gap-3">
+                <span class="text-primary font-bold">1.</span>
+                <div>
+                  <p class="font-semibold mb-1">The original project files</p>
+                  <p class="text-sm text-slate-600 dark:text-slate-400">
+                    index.html + styles.css + images folder — you already have
+                    them.
+                  </p>
+                </div>
+              </li>
+              <li class="p-4 flex gap-3">
+                <span class="text-primary font-bold">2.</span>
+                <div>
+                  <p class="font-semibold mb-1">A modern browser</p>
+                  <p class="text-sm text-slate-600 dark:text-slate-400">
+                    Chrome or Firefox — for previewing the result.
+                  </p>
+                </div>
+              </li>
+              <li class="p-4 flex gap-3">
+                <span class="text-primary font-bold">3.</span>
+                <div>
+                  <p class="font-semibold mb-1">
+                    Working knowledge of semantic HTML
+                  </p>
+                  <p class="text-sm text-slate-600 dark:text-slate-400">
+                    Do not change any tag. Structure stays exactly the same.
+                  </p>
+                </div>
+              </li>
+              <li class="p-4 flex gap-3">
+                <span class="text-primary font-bold">4.</span>
+                <div>
+                  <p class="font-semibold mb-1">Basics of Flexbox</p>
+                  <p class="text-sm text-slate-600 dark:text-slate-400">
+                    You'll use it a lot for layout.
+                  </p>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- ===== STEP 1: SETUP ===== -->
+        <section id="setup">
+          <div class="flex items-center gap-3 mb-3">
+            <span
+              class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm"
+              >1</span
+            >
+            <h2 class="text-2xl sm:text-3xl font-bold">Setup</h2>
+          </div>
+          <p class="text-slate-600 dark:text-slate-400 mb-6">
+            Add Tailwind 4 via CDN to your
+            <code class="inline-code">index.html</code>.
+          </p>
+
+          <p class="font-semibold mb-3">
+            Open <code class="inline-code">&lt;head&gt;</code> and add the
+            following <strong>before</strong>
+            <code class="inline-code">styles.css</code>:
+          </p>
+
+          <div class="code-block">
+            <div class="code-label">index.html</div>
+            <pre><code><span class="c-com">&lt;!-- Tailwind 4 Browser Build --&gt;</span>
+<span class="c-tag">&lt;script</span> <span class="c-attr">src</span>=<span class="c-str">"https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"</span><span class="c-tag">&gt;&lt;/script&gt;</span>
+
+<span class="c-com">&lt;!-- Tailwind 4 config (we'll fill this in later) --&gt;</span>
+<span class="c-tag">&lt;style</span> <span class="c-attr">type</span>=<span class="c-str">"text/tailwindcss"</span><span class="c-tag">&gt;</span>
+  <span class="c-com">/* We'll add @theme here later */</span>
+<span class="c-tag">&lt;/style&gt;</span></code></pre>
+          </div>
+
+          <div class="callout callout-warn mt-4">
+            <p class="font-bold mb-1">⚠️ Don't delete styles.css yet</p>
+            <p class="text-sm">
+              You'll need it as a reference during the conversion. Only at the
+              very end will you delete it.
+            </p>
+          </div>
+        </section>
+
+        <!-- ===== STEP 2: @theme ===== -->
+        <section id="theme">
+          <div class="flex items-center gap-3 mb-3">
+            <span
+              class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm"
+              >2</span
+            >
+            <h2 class="text-2xl sm:text-3xl font-bold">
+              Converting <code class="inline-code text-xl">:root</code> to
+              <code class="inline-code text-xl">@theme</code>
+            </h2>
+          </div>
+          <p class="text-slate-600 dark:text-slate-400 mb-6">
+            This is the first real power of Tailwind 4 — variables automatically
+            become utilities.
+          </p>
+
+          <div class="flex flex-col md:flex-row gap-4">
+            <div class="md:flex-1 md:min-w-0">
+              <p class="text-sm font-bold mb-2 text-slate-500">
+                ❌ Before (styles.css)
+              </p>
+              <div class="code-block">
+                <div class="code-label">styles.css</div>
+                <pre><code><span class="c-attr">:root</span> {
+  <span class="c-attr">--color-primary</span>: <span class="c-str">#6366f1</span>;
+  <span class="c-attr">--color-bg</span>: <span class="c-str">#f8fafc</span>;
+  <span class="c-attr">--radius-lg</span>: <span class="c-str">16px</span>;
+  <span class="c-attr">--font-sans</span>: <span class="c-str">"Inter"</span>, sans-serif;
+}</code></pre>
+              </div>
+            </div>
+            <div class="md:flex-1 md:min-w-0">
+              <p class="text-sm font-bold mb-2 text-primary">
+                ✅ After (index.html)
+              </p>
+              <div class="code-block">
+                <div class="code-label">index.html</div>
+                <pre><code><span class="c-tag">&lt;style</span> <span class="c-attr">type</span>=<span class="c-str">"text/tailwindcss"</span><span class="c-tag">&gt;</span>
+  <span class="c-key">@theme</span> {
+    <span class="c-attr">--color-primary</span>: <span class="c-str">#6366f1</span>;
+    <span class="c-attr">--color-bg</span>: <span class="c-str">#f8fafc</span>;
+    <span class="c-attr">--radius-lg</span>: <span class="c-str">16px</span>;
+    <span class="c-attr">--font-sans</span>: <span class="c-str">"Inter"</span>, sans-serif;
+  }
+<span class="c-tag">&lt;/style&gt;</span></code></pre>
+              </div>
+            </div>
+          </div>
+
+          <div class="callout callout-tip mt-6">
+            <p class="font-bold mb-2">🎯 What just happened?</p>
+            <p class="text-sm mb-2">
+              Once you write
+              <code class="inline-code">--color-primary</code> inside
+              <code class="inline-code">@theme</code>, it becomes available as a
+              utility:
+            </p>
+            <ul class="text-sm space-y-1 list-disc list-inside">
+              <li><code class="inline-code">bg-primary</code> — background</li>
+              <li>
+                <code class="inline-code">text-primary</code> — text color
+              </li>
+              <li><code class="inline-code">border-primary</code> — border</li>
+              <li>
+                <code class="inline-code">rounded-lg</code> — border radius
+              </li>
+              <li><code class="inline-code">font-sans</code> — font family</li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- ===== STEP 3: DARK MODE ===== -->
+        <section id="dark">
+          <div class="flex items-center gap-3 mb-3">
+            <span
+              class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm"
+              >3</span
+            >
+            <h2 class="text-2xl sm:text-3xl font-bold">Enabling Dark Mode</h2>
+          </div>
+          <p class="text-slate-600 dark:text-slate-400 mb-6">
+            The single most important line in the whole project. If you forget
+            it, <code class="inline-code">dark:</code> will never work.
+          </p>
+
+          <div class="callout callout-warn mb-4">
+            <p class="font-bold mb-1">
+              ⚠️ A critical difference from Tailwind 3
+            </p>
+            <p class="text-sm">
+              In Tailwind 4, dark mode defaults to the system preference. To
+              enable it via <code class="inline-code">class="dark"</code> on
+              <code class="inline-code">&lt;html&gt;</code>, you need an
+              explicit line.
+            </p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-label">index.html — inside the style tag</div>
+            <pre><code><span class="c-key">@custom-variant</span> dark (&amp;:where(.dark, .dark *));</code></pre>
+          </div>
+
+          <p class="mt-6 mb-3 font-semibold">How does it work?</p>
+          <div class="flex flex-col sm:flex-row gap-3">
+            <div
+              class="sm:flex-1 rounded-lg p-4 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900"
+            >
+              <p class="font-mono text-xs text-slate-500 mb-1" dir="ltr">
+                &lt;html class="dark"&gt;
+              </p>
+              <p class="text-sm">
+                🌙 Dark mode active — every
+                <code class="inline-code">dark:</code> utility works
+              </p>
+            </div>
+            <div
+              class="sm:flex-1 rounded-lg p-4 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900"
+            >
+              <p class="font-mono text-xs text-slate-500 mb-1" dir="ltr">
+                &lt;html&gt;
+              </p>
+              <p class="text-sm">
+                ☀️ Light mode — <code class="inline-code">dark:</code> does
+                nothing
+              </p>
+            </div>
+          </div>
+
+          <p class="mt-6 mb-3 font-semibold">
+            Example — converting the theme toggle:
+          </p>
+          <div class="flex flex-col md:flex-row gap-4">
+            <div class="md:flex-1 md:min-w-0">
+              <p class="text-sm font-bold mb-2 text-slate-500">
+                ❌ Before (CSS)
+              </p>
+              <div class="code-block">
+                <div class="code-label">styles.css</div>
+                <pre><code><span class="c-attr">.theme-icon--sun</span> { <span class="c-attr">display</span>: <span class="c-str">none</span>; }
+<span class="c-attr">.dark .theme-icon--sun</span> { <span class="c-attr">display</span>: <span class="c-str">inline</span>; }
+<span class="c-attr">.dark .theme-icon--moon</span> { <span class="c-attr">display</span>: <span class="c-str">none</span>; }</code></pre>
+              </div>
+            </div>
+            <div class="md:flex-1 md:min-w-0">
+              <p class="text-sm font-bold mb-2 text-primary">
+                ✅ After (Tailwind)
+              </p>
+              <div class="code-block">
+                <div class="code-label">index.html</div>
+                <pre><code><span class="c-tag">&lt;span</span> <span class="c-attr">class</span>=<span class="c-str">"dark:hidden"</span><span class="c-tag">&gt;</span>🌙<span class="c-tag">&lt;/span&gt;</span>
+<span class="c-tag">&lt;span</span> <span class="c-attr">class</span>=<span class="c-str">"hidden dark:inline"</span><span class="c-tag">&gt;</span>☀️<span class="c-tag">&lt;/span&gt;</span></code></pre>
+              </div>
+            </div>
+          </div>
+          <p class="mt-3 text-sm text-slate-600 dark:text-slate-400">
+            Notice: the icon switches <strong>without any JavaScript</strong> —
+            pure CSS. When you learn JS, all you'll do is toggle a class on
+            <code class="inline-code">&lt;html&gt;</code>, and the icon will
+            switch automatically.
+          </p>
+        </section>
+
+        <!-- ===== STEP 4: CONVERT ===== -->
+        <section id="steps">
+          <div class="flex items-center gap-3 mb-3">
+            <span
+              class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm"
+              >4</span
+            >
+            <h2 class="text-2xl sm:text-3xl font-bold">Convert the Sections</h2>
+          </div>
+          <p class="text-slate-600 dark:text-slate-400 mb-6">
+            Follow the order. Don't move to the next section until the current
+            one visually matches the original.
+          </p>
+
+          <!-- Body -->
+          <div class="section-card">
+            <p class="section-num">4.1</p>
+            <h3 class="text-xl font-bold mb-4">Body &amp; base styles</h3>
+            <div class="code-block">
+              <div class="code-label">index.html</div>
+              <pre><code><span class="c-tag">&lt;body</span> <span class="c-attr">class</span>=<span class="c-str">"font-sans bg-slate-50 dark:bg-[#0b1220] text-slate-900 dark:text-slate-100 antialiased transition-colors"</span><span class="c-tag">&gt;</span></code></pre>
+            </div>
+            <p class="mt-3 text-sm text-slate-600 dark:text-slate-400">
+              💡 Note: custom colors like
+              <code class="inline-code">#0b1220</code> use square brackets [Arbitrary]. If
+              you added them to <code class="inline-code">@theme</code>, you
+              could use a short name instead "Professional".
+            </p>
+          </div>
+
+          <!-- Header -->
+          <div class="section-card">
+            <p class="section-num">4.2</p>
+            <h3 class="text-xl font-bold mb-4">Header</h3>
+            <p class="text-sm mb-3 text-slate-600 dark:text-slate-400">
+              Two key conversions:
+              <code class="inline-code">display:flex</code> →
+              <code class="inline-code">flex</code>, and
+              <span class="font-mono" dir="ltr"
+                >.nav { display:none } @media(min-width:768px){ display:flex
+                }</span
+              >
+              → <code class="inline-code">hidden md:flex</code>.
+            </p>
+            <div class="code-block">
+              <div class="code-label">index.html — Header</div>
+              <pre><code><span class="c-tag">&lt;header</span> <span class="c-attr">class</span>=<span class="c-str">"sticky top-0 z-10 bg-slate-50 dark:bg-[#0b1220] border-b border-slate-200 dark:border-slate-800"</span><span class="c-tag">&gt;</span>
+  <span class="c-tag">&lt;div</span> <span class="c-attr">class</span>=<span class="c-str">"max-w-5xl mx-auto px-6 py-4 flex items-center justify-between gap-4"</span><span class="c-tag">&gt;</span>
+    <span class="c-tag">&lt;a</span> <span class="c-attr">href</span>=<span class="c-str">"#"</span> <span class="c-attr">class</span>=<span class="c-str">"font-extrabold text-lg tracking-tight"</span><span class="c-tag">&gt;</span>maged<span class="c-tag">&lt;span</span> <span class="c-attr">class</span>=<span class="c-str">"text-primary"</span><span class="c-tag">&gt;</span>.<span class="c-tag">&lt;/span&gt;</span>yaseen<span class="c-tag">&lt;/a&gt;</span>
+
+    <span class="c-tag">&lt;nav</span> <span class="c-attr">class</span>=<span class="c-str">"hidden md:flex gap-6"</span><span class="c-tag">&gt;</span>
+      <span class="c-tag">&lt;a</span> <span class="c-attr">href</span>=<span class="c-str">"#about"</span> <span class="c-attr">class</span>=<span class="c-str">"text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors"</span><span class="c-tag">&gt;</span>About<span class="c-tag">&lt;/a&gt;</span>
+      <span class="c-com">&lt;!-- ... same pattern for the rest --&gt;</span>
+    <span class="c-tag">&lt;/nav&gt;</span>
+
+    <span class="c-tag">&lt;button</span> <span class="c-attr">id</span>=<span class="c-str">"theme-toggle"</span> <span class="c-attr">class</span>=<span class="c-str">"w-10 h-10 rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-primary flex items-center justify-center transition-colors"</span><span class="c-tag">&gt;</span>
+      <span class="c-tag">&lt;span</span> <span class="c-attr">class</span>=<span class="c-str">"dark:hidden"</span><span class="c-tag">&gt;</span>🌙<span class="c-tag">&lt;/span&gt;</span>
+      <span class="c-tag">&lt;span</span> <span class="c-attr">class</span>=<span class="c-str">"hidden dark:inline"</span><span class="c-tag">&gt;</span>☀️<span class="c-tag">&lt;/span&gt;</span>
+    <span class="c-tag">&lt;/button&gt;</span>
+  <span class="c-tag">&lt;/div&gt;</span>
+<span class="c-tag">&lt;/header&gt;</span></code></pre>
+            </div>
+          </div>
+
+          <!-- Hero -->
+          <div class="section-card">
+            <p class="section-num">4.3</p>
+            <h3 class="text-xl font-bold mb-4">Hero</h3>
+            <div class="code-block">
+              <div class="code-label">index.html — Hero</div>
+              <pre><code><span class="c-tag">&lt;section</span> <span class="c-attr">class</span>=<span class="c-str">"py-16"</span><span class="c-tag">&gt;</span>
+  <span class="c-tag">&lt;div</span> <span class="c-attr">class</span>=<span class="c-str">"max-w-5xl mx-auto px-6 flex flex-col items-center gap-10 text-center"</span><span class="c-tag">&gt;</span>
+    <span class="c-tag">&lt;div</span> <span class="c-attr">class</span>=<span class="c-str">"flex flex-col items-center gap-5 max-w-xl"</span><span class="c-tag">&gt;</span>
+
+      <span class="c-tag">&lt;p</span> <span class="c-attr">class</span>=<span class="c-str">"inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-full"</span><span class="c-tag">&gt;</span>
+        <span class="c-tag">&lt;span</span> <span class="c-attr">class</span>=<span class="c-str">"w-2 h-2 rounded-full bg-green-500"</span><span class="c-tag">&gt;&lt;/span&gt;</span>
+        Available for work
+      <span class="c-tag">&lt;/p&gt;</span>
+
+      <span class="c-tag">&lt;h1</span> <span class="c-attr">class</span>=<span class="c-str">"text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight"</span><span class="c-tag">&gt;</span>
+        Hi, I'm <span class="c-tag">&lt;span</span> <span class="c-attr">class</span>=<span class="c-str">"text-primary"</span><span class="c-tag">&gt;</span>Maged Yaseen<span class="c-tag">&lt;/span&gt;</span> —<span class="c-tag">&lt;br&gt;</span>
+        I build clean, accessible interfaces.
+      <span class="c-tag">&lt;/h1&gt;</span>
+
+      <span class="c-tag">&lt;p</span> <span class="c-attr">class</span>=<span class="c-str">"text-slate-500 dark:text-slate-400"</span><span class="c-tag">&gt;</span>
+        Frontend developer in progress...
+      <span class="c-tag">&lt;/p&gt;</span>
+
+      <span class="c-tag">&lt;div</span> <span class="c-attr">class</span>=<span class="c-str">"flex flex-wrap justify-center gap-3"</span><span class="c-tag">&gt;</span>
+        <span class="c-tag">&lt;a</span> <span class="c-attr">href</span>=<span class="c-str">"#projects"</span> <span class="c-attr">class</span>=<span class="c-str">"inline-flex items-center px-6 py-3 text-sm font-semibold rounded-lg bg-primary text-white hover:bg-primary-dark transition-colors"</span><span class="c-tag">&gt;</span>View my work<span class="c-tag">&lt;/a&gt;</span>
+        <span class="c-tag">&lt;a</span> <span class="c-attr">href</span>=<span class="c-str">"#"</span> <span class="c-attr">class</span>=<span class="c-str">"inline-flex items-center px-6 py-3 text-sm font-semibold rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-primary transition-colors"</span><span class="c-tag">&gt;</span>Download CV<span class="c-tag">&lt;/a&gt;</span>
+      <span class="c-tag">&lt;/div&gt;</span>
+    <span class="c-tag">&lt;/div&gt;</span>
+
+    <span class="c-tag">&lt;img</span> <span class="c-attr">src</span>=<span class="c-str">"assets/imgs/maged.png"</span> <span class="c-attr">alt</span>=<span class="c-str">"Maged Yaseen"</span> <span class="c-attr">class</span>=<span class="c-str">"w-48 h-48 object-cover rounded-full border-4 border-white dark:border-slate-800 shadow-xl"</span><span class="c-tag">&gt;</span>
+  <span class="c-tag">&lt;/div&gt;</span>
+<span class="c-tag">&lt;/section&gt;</span></code></pre>
+            </div>
+          </div>
+
+          <!-- About + Skills -->
+          <div class="section-card">
+            <p class="section-num">4.4</p>
+            <h3 class="text-xl font-bold mb-4">About + Skills</h3>
+            <p class="text-sm mb-3 text-slate-600 dark:text-slate-400">
+              These two sections rely primarily on <strong>Flexbox</strong>. Pay
+              attention to <code class="inline-code">md:flex-row</code>,
+              <code class="inline-code">flex-wrap</code>, and equal-width
+              children with <code class="inline-code">md:flex-1</code>.
+            </p>
+            <div class="code-block">
+              <div class="code-label">index.html — About</div>
+              <pre><code><span class="c-tag">&lt;section</span> <span class="c-attr">id</span>=<span class="c-str">"about"</span> <span class="c-attr">class</span>=<span class="c-str">"py-16"</span><span class="c-tag">&gt;</span>
+  <span class="c-tag">&lt;div</span> <span class="c-attr">class</span>=<span class="c-str">"max-w-5xl mx-auto px-6"</span><span class="c-tag">&gt;</span>
+    <span class="c-tag">&lt;h2</span> <span class="c-attr">class</span>=<span class="c-str">"text-2xl font-bold tracking-tight mb-2"</span><span class="c-tag">&gt;</span>About<span class="c-tag">&lt;/h2&gt;</span>
+    <span class="c-tag">&lt;p</span> <span class="c-attr">class</span>=<span class="c-str">"text-slate-500 dark:text-slate-400 mb-8"</span><span class="c-tag">&gt;</span>A short intro — written in my own words.<span class="c-tag">&lt;/p&gt;</span>
+
+    <span class="c-tag">&lt;div</span> <span class="c-attr">class</span>=<span class="c-str">"flex flex-col gap-8 md:flex-row md:items-start"</span><span class="c-tag">&gt;</span>
+      <span class="c-tag">&lt;p</span> <span class="c-attr">class</span>=<span class="c-str">"text-slate-500 dark:text-slate-400 max-w-[60ch] md:flex-1"</span><span class="c-tag">&gt;</span>I'm a self-taught...<span class="c-tag">&lt;/p&gt;</span>
+
+      <span class="c-tag">&lt;ul</span> <span class="c-attr">class</span>=<span class="c-str">"flex flex-col gap-3 md:flex-1"</span><span class="c-tag">&gt;</span>
+        <span class="c-tag">&lt;li</span> <span class="c-attr">class</span>=<span class="c-str">"flex justify-between px-4 py-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg"</span><span class="c-tag">&gt;</span>
+          <span class="c-tag">&lt;span</span> <span class="c-attr">class</span>=<span class="c-str">"text-sm text-slate-500 dark:text-slate-400"</span><span class="c-tag">&gt;</span>Based in<span class="c-tag">&lt;/span&gt;</span>
+          <span class="c-tag">&lt;span</span> <span class="c-attr">class</span>=<span class="c-str">"text-sm font-semibold"</span><span class="c-tag">&gt;</span>Alexandria, Egypt<span class="c-tag">&lt;/span&gt;</span>
+        <span class="c-tag">&lt;/li&gt;</span>
+      <span class="c-tag">&lt;/ul&gt;</span>
+    <span class="c-tag">&lt;/div&gt;</span>
+  <span class="c-tag">&lt;/div&gt;</span>
+<span class="c-tag">&lt;/section&gt;</span></code></pre>
+            </div>
+
+            <div class="code-block mt-4">
+              <div class="code-label">
+                index.html — Skills (groups + one group example)
+              </div>
+              <pre><code><span class="c-tag">&lt;div</span> <span class="c-attr">class</span>=<span class="c-str">"flex flex-wrap gap-6"</span><span class="c-tag">&gt;</span>
+  <span class="c-tag">&lt;div</span> <span class="c-attr">class</span>=<span class="c-str">"w-full md:w-[calc((100%-3rem)/3)] p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl"</span><span class="c-tag">&gt;</span>
+    <span class="c-tag">&lt;h3</span> <span class="c-attr">class</span>=<span class="c-str">"text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3"</span><span class="c-tag">&gt;</span>Frontend<span class="c-tag">&lt;/h3&gt;</span>
+    <span class="c-tag">&lt;ul</span> <span class="c-attr">class</span>=<span class="c-str">"flex flex-wrap gap-2"</span><span class="c-tag">&gt;</span>
+      <span class="c-tag">&lt;li</span> <span class="c-attr">class</span>=<span class="c-str">"px-3 py-1.5 text-sm font-medium bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-full"</span><span class="c-tag">&gt;</span>HTML5<span class="c-tag">&lt;/li&gt;</span>
+    <span class="c-tag">&lt;/ul&gt;</span>
+  <span class="c-tag">&lt;/div&gt;</span>
+  <span class="c-com">&lt;!-- Backend + Tools groups follow the same pattern --&gt;</span>
+<span class="c-tag">&lt;/div&gt;</span></code></pre>
+            </div>
+          </div>
+
+          <!-- Projects -->
+          <div class="section-card">
+            <p class="section-num">4.5</p>
+            <h3 class="text-xl font-bold mb-4">Projects + Filter bar</h3>
+            <p class="text-sm mb-3 text-slate-600 dark:text-slate-400">
+              This section contains the
+              <strong>two most important elements</strong> in the project: the
+              filter buttons (JS socket #2) and the project cards (JS socket
+              #3).
+            </p>
+
+            <div class="code-block">
+              <div class="code-label">index.html — Filter bar</div>
+              <pre><code><span class="c-tag">&lt;div</span> <span class="c-attr">class</span>=<span class="c-str">"flex flex-wrap gap-2 mb-6"</span> <span class="c-attr">role</span>=<span class="c-str">"tablist"</span><span class="c-tag">&gt;</span>
+  <span class="c-tag">&lt;button</span> <span class="c-attr">class</span>=<span class="c-str">"px-4 py-2 text-sm font-medium rounded-full bg-primary text-white border border-primary cursor-pointer"</span> <span class="c-attr">data-filter</span>=<span class="c-str">"all"</span><span class="c-tag">&gt;</span>All<span class="c-tag">&lt;/button&gt;</span>
+  <span class="c-tag">&lt;button</span> <span class="c-attr">class</span>=<span class="c-str">"px-4 py-2 text-sm font-medium rounded-full bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:text-slate-900 dark:hover:text-slate-100 hover:border-primary cursor-pointer transition-colors"</span> <span class="c-attr">data-filter</span>=<span class="c-str">"html-css"</span><span class="c-tag">&gt;</span>HTML &amp; CSS<span class="c-tag">&lt;/button&gt;</span>
+  <span class="c-com">&lt;!-- ... remaining buttons follow the same pattern --&gt;</span>
+<span class="c-tag">&lt;/div&gt;</span></code></pre>
+            </div>
+
+            <div class="callout callout-tip mt-4">
+              <p class="font-bold mb-1">💡 The "active" state</p>
+              <p class="text-sm">
+                In the original,
+                <code class="inline-code">.filter-btn.is-active</code> applies
+                the purple background. In Tailwind, we use a
+                <strong>custom class</strong> or apply the utilities directly.
+                Cleanest approach:
+              </p>
+              <p class="text-sm mt-2">
+                In HTML, the active button gets
+                <code class="inline-code"
+                  >bg-primary text-white border-primary</code
+                >. When they learn JS, they'll toggle these utilities.
+              </p>
+            </div>
+
+            <div class="code-block mt-4">
+              <div class="code-label">index.html — Project card</div>
+              <pre><code><span class="c-tag">&lt;article</span> <span class="c-attr">class</span>=<span class="c-str">"bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden transition hover:-translate-y-1 hover:shadow-xl hover:border-primary"</span> <span class="c-attr">data-category</span>=<span class="c-str">"tailwind ui"</span><span class="c-tag">&gt;</span>
+  <span class="c-tag">&lt;div</span> <span class="c-attr">class</span>=<span class="c-str">"h-36 flex items-center justify-center bg-gradient-to-br from-indigo-500 to-violet-500"</span><span class="c-tag">&gt;</span>
+    <span class="c-tag">&lt;div</span> <span class="c-attr">class</span>=<span class="c-str">"w-16 h-16 rounded-xl bg-white flex items-center justify-center p-2"</span><span class="c-tag">&gt;</span>
+      <span class="c-tag">&lt;img</span> <span class="c-attr">src</span>=<span class="c-str">"assets/imgs/maged.png"</span> <span class="c-attr">alt</span>=<span class="c-str">""</span> <span class="c-attr">class</span>=<span class="c-str">"w-full h-full object-contain"</span><span class="c-tag">&gt;</span>
+    <span class="c-tag">&lt;/div&gt;</span>
+  <span class="c-tag">&lt;/div&gt;</span>
+  <span class="c-tag">&lt;div</span> <span class="c-attr">class</span>=<span class="c-str">"p-5"</span><span class="c-tag">&gt;</span>
+    <span class="c-tag">&lt;h3</span> <span class="c-attr">class</span>=<span class="c-str">"text-base font-bold mb-1.5"</span><span class="c-tag">&gt;</span>Portfolio Website<span class="c-tag">&lt;/h3&gt;</span>
+    <span class="c-tag">&lt;p</span> <span class="c-attr">class</span>=<span class="c-str">"text-sm text-slate-500 dark:text-slate-400 mb-3"</span><span class="c-tag">&gt;</span>A responsive personal portfolio...<span class="c-tag">&lt;/p&gt;</span>
+    <span class="c-tag">&lt;ul</span> <span class="c-attr">class</span>=<span class="c-str">"flex flex-wrap gap-1.5 mb-4"</span><span class="c-tag">&gt;</span>
+      <span class="c-tag">&lt;li</span> <span class="c-attr">class</span>=<span class="c-str">"px-2.5 py-1 text-xs font-medium bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-full"</span><span class="c-tag">&gt;</span>HTML<span class="c-tag">&lt;/li&gt;</span>
+    <span class="c-tag">&lt;/ul&gt;</span>
+    <span class="c-tag">&lt;div</span> <span class="c-attr">class</span>=<span class="c-str">"flex gap-4"</span><span class="c-tag">&gt;</span>
+      <span class="c-tag">&lt;a</span> <span class="c-attr">href</span>=<span class="c-str">"#"</span> <span class="c-attr">class</span>=<span class="c-str">"text-sm font-semibold text-primary hover:text-primary-dark transition-colors"</span><span class="c-tag">&gt;</span>Live →<span class="c-tag">&lt;/a&gt;</span>
+      <span class="c-tag">&lt;a</span> <span class="c-attr">href</span>=<span class="c-str">"#"</span> <span class="c-attr">class</span>=<span class="c-str">"text-sm font-semibold text-primary hover:text-primary-dark transition-colors"</span><span class="c-tag">&gt;</span>Code →<span class="c-tag">&lt;/a&gt;</span>
+    <span class="c-tag">&lt;/div&gt;</span>
+  <span class="c-tag">&lt;/div&gt;</span>
+<span class="c-tag">&lt;/article&gt;</span></code></pre>
+            </div>
+
+            <div class="code-block mt-4">
+              <div class="code-label">index.html — Projects layout</div>
+              <pre><code><span class="c-tag">&lt;div</span> <span class="c-attr">class</span>=<span class="c-str">"flex flex-wrap gap-6"</span><span class="c-tag">&gt;</span>
+  <span class="c-com">&lt;!-- Each card: w-full sm:w-[calc((100%-1.5rem)/2)] lg:w-[calc((100%-3rem)/3)] --&gt;</span>
+<span class="c-tag">&lt;/div&gt;</span></code></pre>
+            </div>
+          </div>
+
+          <!-- Contact + Footer -->
+          <div class="section-card">
+            <p class="section-num">4.6</p>
+            <h3 class="text-xl font-bold mb-4">Contact + Footer</h3>
+            <div class="code-block">
+              <div class="code-label">index.html — Contact</div>
+              <pre><code><span class="c-tag">&lt;section</span> <span class="c-attr">id</span>=<span class="c-str">"contact"</span> <span class="c-attr">class</span>=<span class="c-str">"py-16 text-center"</span><span class="c-tag">&gt;</span>
+  <span class="c-tag">&lt;div</span> <span class="c-attr">class</span>=<span class="c-str">"max-w-5xl mx-auto px-6"</span><span class="c-tag">&gt;</span>
+    <span class="c-tag">&lt;h2</span> <span class="c-attr">class</span>=<span class="c-str">"text-2xl font-bold tracking-tight mb-2"</span><span class="c-tag">&gt;</span>Let's build something<span class="c-tag">&lt;/h2&gt;</span>
+    <span class="c-tag">&lt;p</span> <span class="c-attr">class</span>=<span class="c-str">"text-slate-500 dark:text-slate-400 mb-8"</span><span class="c-tag">&gt;</span>Feel free to reach out...<span class="c-tag">&lt;/p&gt;</span>
+
+    <span class="c-tag">&lt;div</span> <span class="c-attr">class</span>=<span class="c-str">"flex flex-wrap justify-center gap-3"</span><span class="c-tag">&gt;</span>
+      <span class="c-tag">&lt;a</span> <span class="c-attr">href</span>=<span class="c-str">"mailto:magedyaseen@gmail.com"</span> <span class="c-attr">class</span>=<span class="c-str">"inline-flex items-center gap-2 px-5 py-3 text-sm font-semibold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-full hover:text-primary hover:border-primary transition-colors"</span><span class="c-tag">&gt;</span>✉️ Email<span class="c-tag">&lt;/a&gt;</span>
+    <span class="c-tag">&lt;/div&gt;</span>
+  <span class="c-tag">&lt;/div&gt;</span>
+<span class="c-tag">&lt;/section&gt;</span></code></pre>
+            </div>
+          </div>
+
+          <div class="callout callout-success mt-6">
+            <p class="font-bold mb-1">🎉 Final step</p>
+            <p class="text-sm">
+              After you've finished all sections, <strong>comment the link to styles.css</strong> and ensure that they visually match the original. Then <strong>delete styles.css</strong> and every
+              reference to it. Now your project relies 100% on Tailwind classes.
+            </p>
+          </div>
+        </section>
+
+        <!-- ===== CHEAT SHEET ===== -->
+        <section id="cheatsheet">
+          <h2 class="text-2xl sm:text-3xl font-bold mb-2">
+            The Complete Cheat Sheet
+          </h2>
+          <p class="text-slate-600 dark:text-slate-400 mb-6">
+            Your quick reference. Bookmark it.
+          </p>
+
+          <div
+            class="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden"
+          >
+            <table class="w-full text-sm">
+              <thead class="bg-slate-50 dark:bg-slate-800/50">
+                <tr>
+                  <th class="text-left px-4 py-3 font-semibold">CSS</th>
+                  <th class="text-left px-4 py-3 font-semibold">Tailwind 4</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
+                <tr>
+                  <td class="px-4 py-3">
+                    <code class="inline-code">display: flex;</code>
+                  </td>
+                  <td class="px-4 py-3">
+                    <code class="inline-code">flex</code>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3">
+                    <code class="inline-code">align-items: center;</code>
+                  </td>
+                  <td class="px-4 py-3">
+                    <code class="inline-code">items-center</code>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3">
+                    <code class="inline-code"
+                      >justify-content: space-between;</code
+                    >
+                  </td>
+                  <td class="px-4 py-3">
+                    <code class="inline-code">justify-between</code>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3">
+                    <code class="inline-code">flex-wrap: wrap;</code>
+                  </td>
+                  <td class="px-4 py-3">
+                    <code class="inline-code">flex-wrap</code>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3">
+                    <code class="inline-code">flex: 1 1 0;</code>
+                  </td>
+                  <td class="px-4 py-3">
+                    <code class="inline-code">flex-1</code>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3">
+                    <code class="inline-code">flex-direction: column;</code>
+                  </td>
+                  <td class="px-4 py-3">
+                    <code class="inline-code">flex-col</code>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3">
+                    <code class="inline-code">gap: 24px;</code>
+                  </td>
+                  <td class="px-4 py-3">
+                    <code class="inline-code">gap-6</code>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3">
+                    <code class="inline-code">padding: 16px 24px;</code>
+                  </td>
+                  <td class="px-4 py-3">
+                    <code class="inline-code">py-4 px-6</code>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3">
+                    <code class="inline-code">border-radius: 999px;</code>
+                  </td>
+                  <td class="px-4 py-3">
+                    <code class="inline-code">rounded-full</code>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3">
+                    <code class="inline-code">border-radius: 16px;</code>
+                  </td>
+                  <td class="px-4 py-3">
+                    <code class="inline-code">rounded-2xl</code>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3">
+                    <code class="inline-code"
+                      >font-size: 14px; font-weight: 600;</code
+                    >
+                  </td>
+                  <td class="px-4 py-3">
+                    <code class="inline-code">text-sm font-semibold</code>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3">
+                    <code class="inline-code"
+                      >box-shadow: 0 8px 24px rgba(0,0,0,.1);</code
+                    >
+                  </td>
+                  <td class="px-4 py-3">
+                    <code class="inline-code">shadow-xl</code>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3">
+                    <code class="inline-code"
+                      >transition: background .15s;</code
+                    >
+                  </td>
+                  <td class="px-4 py-3">
+                    <code class="inline-code">transition-colors</code>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3">
+                    <code class="inline-code"
+                      >@media(min-width:768px){display:flex}</code
+                    >
+                  </td>
+                  <td class="px-4 py-3">
+                    <code class="inline-code">hidden md:flex</code>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3">
+                    <code class="inline-code">:hover { color: blue; }</code>
+                  </td>
+                  <td class="px-4 py-3">
+                    <code class="inline-code">hover:text-blue-500</code>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3">
+                    <code class="inline-code">.dark .x { display:none; }</code>
+                  </td>
+                  <td class="px-4 py-3">
+                    <code class="inline-code">dark:hidden</code>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3">
+                    <code class="inline-code"
+                      >transform: translateY(-4px);</code
+                    >
+                  </td>
+                  <td class="px-4 py-3">
+                    <code class="inline-code">hover:-translate-y-1</code>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3">
+                    <code class="inline-code">object-fit: cover;</code>
+                  </td>
+                  <td class="px-4 py-3">
+                    <code class="inline-code">object-cover</code>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ===== CHECKLIST ===== -->
+        <section id="checklist">
+          <div
+            class="rounded-2xl border-2 border-primary bg-primary/5 dark:bg-primary/10 p-6 sm:p-8"
+          >
+            <div class="flex items-center gap-3 mb-6">
+              <span class="text-3xl">✅</span>
+              <div>
+                <h2 class="text-2xl sm:text-3xl font-bold text-primary">
+                  Checklist — HTML + Tailwind Phase
+                </h2>
+                <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                  Don't submit the project until you've checked every item.
+                </p>
+              </div>
+            </div>
+
+            <div class="space-y-2">
+              <label class="check-item"
+                ><input type="checkbox" class="check-box" /><span
+                  >I added
+                  <code class="inline-code"
+                    >&lt;script src="@tailwindcss/browser@4"&gt;</code
+                  >
+                  in <code class="inline-code">&lt;head&gt;</code></span
+                ></label
+              >
+              <label class="check-item"
+                ><input type="checkbox" class="check-box" /><span
+                  >I added <code class="inline-code">@theme</code> and moved
+                  every <code class="inline-code">:root</code> variable into
+                  it</span
+                ></label
+              >
+              <label class="check-item"
+                ><input type="checkbox" class="check-box" /><span
+                  >I added
+                  <code class="inline-code"
+                    >@custom-variant dark (&amp;:where(.dark, .dark *));</code
+                  >
+                  — <strong>the most important one</strong></span
+                ></label
+              >
+              <label class="check-item"
+                ><input type="checkbox" class="check-box" /><span
+                  >I manually toggled
+                  <code class="inline-code">&lt;html class="dark"&gt;</code> and
+                  dark mode works</span
+                ></label
+              >
+              <label class="check-item"
+                ><input type="checkbox" class="check-box" /><span
+                  >I converted the full Header, and
+                  <code class="inline-code">.nav</code> works via
+                  <code class="inline-code">hidden md:flex</code></span
+                ></label
+              >
+              <label class="check-item"
+                ><input type="checkbox" class="check-box" /><span
+                  >I converted the Hero, and the avatar is circular via
+                  <code class="inline-code">rounded-full</code></span
+                ></label
+              >
+              <label class="check-item"
+                ><input type="checkbox" class="check-box" /><span
+                  >I converted About + Skills using Flexbox</span
+                ></label
+              >
+              <label class="check-item"
+                ><input type="checkbox" class="check-box" /><span
+                  >I converted the filter bar, and the "All" button is active
+                  with a purple background by default</span
+                ></label
+              >
+              <label class="check-item"
+                ><input type="checkbox" class="check-box" /><span
+                  >I converted all six cards, with
+                  <code class="inline-code">hover:-translate-y-1</code></span
+                ></label
+              >
+              <label class="check-item"
+                ><input type="checkbox" class="check-box" /><span
+                  >I converted Contact + Footer</span
+                ></label
+              >
+              <label class="check-item"
+                ><input type="checkbox" class="check-box" /><span
+                  >The page is responsive at 375px (mobile) — no horizontal
+                  scroll</span
+                ></label
+              >
+              <label class="check-item"
+                ><input type="checkbox" class="check-box" /><span
+                  >The page is responsive at 768px (tablet) — Navbar appears,
+                  flex layouts go to two columns</span
+                ></label
+              >
+              <label class="check-item"
+                ><input type="checkbox" class="check-box" /><span
+                  >The page is responsive at 1280px (desktop) — projects in 3
+                  columns</span
+                ></label
+              >
+              <label class="check-item"
+                ><input type="checkbox" class="check-box" /><span
+                  >I <strong>did not delete</strong> any
+                  <code class="inline-code">id</code> or
+                  <code class="inline-code">data-*</code> attribute — I'll need
+                  them in the JS phase</span
+                ></label
+              >
+              <label class="check-item"
+                ><input type="checkbox" class="check-box" /><span
+                  >I deleted <code class="inline-code">styles.css</code> and
+                  every reference to it</span
+                ></label
+              >
+              <label class="check-item"
+                ><input type="checkbox" class="check-box" /><span
+                  >The final result visually matches the original in both themes
+                  (light/dark)</span
+                ></label
+              >
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== JS PHASE ===== -->
+        <section id="js-phase">
+          <div
+            class="rounded-2xl border-2 border-violet-500 bg-violet-50 dark:bg-violet-950/30 p-6 sm:p-8"
+          >
+            <div class="flex items-center gap-3 mb-6">
+              <span class="text-3xl">🔌</span>
+              <div>
+                <h2
+                  class="text-2xl sm:text-3xl font-bold text-violet-700 dark:text-violet-300"
+                >
+                  JavaScript Phase — Later
+                </h2>
+                <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                  This phase is <strong>not</strong> to be completed now. But
+                  we've added every "socket" so it's ready.
+                </p>
+              </div>
+            </div>
+
+            <div class="callout callout-tip mb-6">
+              <p class="font-bold mb-1">💡 Why plan for this now?</p>
+              <p class="text-sm">
+                Because we're teaching you a professional architectural
+                principle:
+                <strong
+                  >separate presentation (HTML+CSS) from behavior (JS)</strong
+                >. Today you build the full interface and leave "sockets" —
+                tomorrow you wire the electricity in 10 lines.
+              </p>
+            </div>
+
+            <h3 class="text-xl font-bold mb-3 mt-8">
+              🎨 Feature 1: Theme toggle
+            </h3>
+            <p class="text-sm mb-3 text-slate-600 dark:text-slate-400">
+              All you need is to toggle a class on
+              <code class="inline-code">&lt;html&gt;</code>. Everything else
+              (icon and color changes) is handled by CSS automatically.
+            </p>
+            <div class="code-block">
+              <div class="code-label">script.js</div>
+              <pre><code><span class="c-key">const</span> toggle = document.<span class="c-fn">getElementById</span>(<span class="c-str">'theme-toggle'</span>);
+
+toggle.<span class="c-fn">addEventListener</span>(<span class="c-str">'click'</span>, () =&gt; {
+  document.documentElement.classList.<span class="c-fn">toggle</span>(<span class="c-str">'dark'</span>);
+});</code></pre>
+            </div>
+            <p class="text-sm text-slate-600 dark:text-slate-400 mt-2">
+              ✅ <strong>3 lines only</strong> — that's all it takes. All
+              dark-mode styling already exists via
+              <code class="inline-code">dark:</code>.
+            </p>
+
+            <h3 class="text-xl font-bold mb-3 mt-8">
+              🔍 Feature 2: Filtering projects
+            </h3>
+            <p class="text-sm mb-3 text-slate-600 dark:text-slate-400">
+              When they learn JS, they'll add this code that reads
+              <code class="inline-code">data-filter</code> from the buttons and
+              <code class="inline-code">data-category</code> from the cards.
+            </p>
+            <div class="code-block">
+              <div class="code-label">script.js</div>
+              <pre><code><span class="c-key">const</span> filterButtons = document.<span class="c-fn">querySelectorAll</span>(<span class="c-str">'.filter-btn'</span>);
+<span class="c-key">const</span> projectCards  = document.<span class="c-fn">querySelectorAll</span>(<span class="c-str">'.project-card'</span>);
+
+filterButtons.<span class="c-fn">forEach</span>((btn) =&gt; {
+  btn.<span class="c-fn">addEventListener</span>(<span class="c-str">'click'</span>, () =&gt; {
+    <span class="c-com">// 1. Update the active state</span>
+    filterButtons.<span class="c-fn">forEach</span>((b) =&gt; b.classList.<span class="c-fn">remove</span>(<span class="c-str">'bg-primary'</span>, <span class="c-str">'text-white'</span>, <span class="c-str">'border-primary'</span>));
+    btn.classList.<span class="c-fn">add</span>(<span class="c-str">'bg-primary'</span>, <span class="c-str">'text-white'</span>, <span class="c-str">'border-primary'</span>);
+
+    <span class="c-com">// 2. Filter the cards</span>
+    <span class="c-key">const</span> filter = btn.dataset.filter;
+    projectCards.<span class="c-fn">forEach</span>((card) =&gt; {
+      <span class="c-key">const</span> cats = card.dataset.category.<span class="c-fn">split</span>(<span class="c-str">' '</span>);
+      card.hidden = filter !== <span class="c-str">'all'</span> &amp;&amp; !cats.<span class="c-fn">includes</span>(filter);
+    });
+  });
+});</code></pre>
+            </div>
+
+            <div class="callout callout-warn mt-4">
+              <p class="font-bold mb-1">
+                ⚠️ Why <code class="inline-code">card.hidden</code> and not
+                <code class="inline-code">display:none</code>?
+              </p>
+              <p class="text-sm">
+                Because <code class="inline-code">hidden</code> is a standard
+                HTML attribute that fully removes the element from the Flex
+                layout without breaking the flow. You'll discuss this in more
+                depth when you reach that phase.
+              </p>
+            </div>
+
+            <h3 class="text-lg font-bold mb-3 mt-8">
+              📋 Checklist — JS Phase (for the future)
+            </h3>
+            <div class="space-y-2">
+              <label class="check-item"
+                ><input type="checkbox" class="check-box" /><span
+                  >The theme button works with one click and toggles between
+                  both modes</span
+                ></label
+              >
+              <label class="check-item"
+                ><input type="checkbox" class="check-box" /><span
+                  >The button icon switches between 🌙 and ☀️
+                  automatically</span
+                ></label
+              >
+              <label class="check-item"
+                ><input type="checkbox" class="check-box" /><span
+                  >Clicking "Tailwind" shows only cards whose
+                  <code class="inline-code">data-category</code> contains
+                  <code class="inline-code">tailwind</code></span
+                ></label
+              >
+              <label class="check-item"
+                ><input type="checkbox" class="check-box" /><span
+                  >Clicking "All" brings every card back</span
+                ></label
+              >
+              <label class="check-item"
+                ><input type="checkbox" class="check-box" /><span
+                  >Only the active button carries the purple background</span
+                ></label
+              >
+              <label class="check-item"
+                ><input type="checkbox" class="check-box" /><span
+                  >I wrote no new styling in JS — all styling comes from
+                  Tailwind</span
+                ></label
+              >
+            </div>
+
+            <div class="callout callout-success mt-6">
+              <p class="font-bold mb-1">
+                🎓 What did you learn from this design?
+              </p>
+              <ul class="text-sm space-y-1 list-disc list-inside mt-2">
+                <li>Separating "presentation" (CSS) from "behavior" (JS)</li>
+                <li>
+                  Using <code class="inline-code">data-*</code> as a contract
+                  between HTML and JS
+                </li>
+                <li>
+                  Preserving <code class="inline-code">id</code> attributes for
+                  future use
+                </li>
+                <li>Architectural thinking: structure now, behavior later</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== TROUBLESHOOTING ===== -->
+        <section id="troubleshooting">
+          <h2 class="text-2xl sm:text-3xl font-bold mb-2">
+            Common Mistakes &amp; Fixes
+          </h2>
+          <p class="text-slate-600 dark:text-slate-400 mb-6">
+            It happens to everyone. Let's walk through them quickly.
+          </p>
+
+          <div class="space-y-3">
+            <details
+              class="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden group"
+            >
+              <summary
+                class="px-5 py-4 cursor-pointer font-semibold list-none flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800/50"
+              >
+                <span
+                  >❌ Dark mode doesn't work even though I added
+                  <code class="inline-code">dark:</code></span
+                >
+                <span
+                  class="text-primary group-open:rotate-180 transition-transform"
+                  >▾</span
+                >
+              </summary>
+              <div
+                class="px-5 pb-4 text-sm text-slate-600 dark:text-slate-400 border-t border-slate-200 dark:border-slate-800 pt-4"
+              >
+                <p>Two possibilities:</p>
+                <ol class="list-decimal list-inside space-y-1 mt-2">
+                  <li>
+                    You forgot the line
+                    <code class="inline-code">@custom-variant dark (...)</code>
+                    inside
+                    <code class="inline-code"
+                      >&lt;style type="text/tailwindcss"&gt;</code
+                    >.
+                  </li>
+                  <li>
+                    You didn't add
+                    <code class="inline-code">class="dark"</code> on
+                    <code class="inline-code">&lt;html&gt;</code> or didn't test
+                    toggling it.
+                  </li>
+                </ol>
+              </div>
+            </details>
+
+            <details
+              class="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden group"
+            >
+              <summary
+                class="px-5 py-4 cursor-pointer font-semibold list-none flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800/50"
+              >
+                <span
+                  >❌ Tailwind classes don't work (page has no styling)</span
+                >
+                <span
+                  class="text-primary group-open:rotate-180 transition-transform"
+                  >▾</span
+                >
+              </summary>
+              <div
+                class="px-5 pb-4 text-sm text-slate-600 dark:text-slate-400 border-t border-slate-200 dark:border-slate-800 pt-4"
+              >
+                <p>Verify:</p>
+                <ul class="list-disc list-inside space-y-1 mt-2">
+                  <li>
+                    The CDN script exists <strong>before</strong> the
+                    <code class="inline-code">&lt;style&gt;</code> tag.
+                  </li>
+                  <li>
+                    The style script is of type
+                    <code class="inline-code">text/tailwindcss</code>, not
+                    <code class="inline-code">text/css</code>.
+                  </li>
+                  <li>
+                    You're connected to the internet (the CDN loads remotely).
+                  </li>
+                </ul>
+              </div>
+            </details>
+
+            <details
+              class="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden group"
+            >
+              <summary
+                class="px-5 py-4 cursor-pointer font-semibold list-none flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800/50"
+              >
+                <span
+                  >❌ <code class="inline-code">bg-primary</code> doesn't
+                  work</span
+                >
+                <span
+                  class="text-primary group-open:rotate-180 transition-transform"
+                  >▾</span
+                >
+              </summary>
+              <div
+                class="px-5 pb-4 text-sm text-slate-600 dark:text-slate-400 border-t border-slate-200 dark:border-slate-800 pt-4"
+              >
+                <p>
+                  You must have added this in
+                  <code class="inline-code">@theme</code>:
+                </p>
+                <pre
+                  class="mt-2 p-3 rounded bg-slate-100 dark:bg-slate-950 text-xs font-mono overflow-x-auto"
+                  dir="ltr"
+                ><code>--color-primary: #6366f1;</code></pre>
+                <p class="mt-2">
+                  In Tailwind 4, if you haven't defined the variable, it won't
+                  auto-generate a utility.
+                </p>
+              </div>
+            </details>
+
+            <details
+              class="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden group"
+            >
+              <summary
+                class="px-5 py-4 cursor-pointer font-semibold list-none flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800/50"
+              >
+                <span>❌ Page overflows horizontally on mobile</span>
+                <span
+                  class="text-primary group-open:rotate-180 transition-transform"
+                  >▾</span
+                >
+              </summary>
+              <div
+                class="px-5 pb-4 text-sm text-slate-600 dark:text-slate-400 border-t border-slate-200 dark:border-slate-800 pt-4"
+              >
+                <p>Look for an element with:</p>
+                <ul class="list-disc list-inside space-y-1 mt-2">
+                  <li>
+                    <code class="inline-code">w-[680px]</code> fixed width or a
+                    large <code class="inline-code">min-w-*</code>.
+                  </li>
+                  <li>
+                    An image without
+                    <code class="inline-code">max-w-full</code>.
+                  </li>
+                  <li>
+                    Cards with fixed desktop widths (for example
+                    <code class="inline-code">w-[calc((100%-3rem)/3)]</code>)
+                    and no <code class="inline-code">w-full</code> /
+                    <code class="inline-code">sm:</code> /
+                    <code class="inline-code">lg:</code> breakpoints.
+                  </li>
+                </ul>
+              </div>
+            </details>
+          </div>
+        </section>
+
+        <!-- ===== FOOTER ===== -->
+        <footer class="pt-8 border-t border-slate-200 dark:border-slate-800">
+          <p class="text-sm text-slate-500 dark:text-slate-400 text-center">
+            Made with ❤️ for Frontend learners — Portfolio to Tailwind CSS 4
+            Migration Guide
+          </p>
+          <p
+            class="text-xs text-slate-400 dark:text-slate-500 text-center mt-2"
+          >
+            The page you're reading right now is built with Tailwind 4 CDN —
+            it's itself a live example of what you can do.
+          </p>
+        </footer>
+      </main>
+    </div>
+
+    <!-- ============ SCRIPT ============ -->
+    <script>
+      const THEME_KEY = "guides-theme";
+      const CHECKLIST_KEY = "guides-checklist";
+      const root = document.documentElement;
+
+      // Theme — save on change
+      document
+        .getElementById("guide-theme-toggle")
+        .addEventListener("click", () => {
+          root.classList.toggle("dark");
+          localStorage.setItem(
+            THEME_KEY,
+            root.classList.contains("dark") ? "dark" : "light"
+          );
+        });
+
+      // Checklist — restore, then save on each change
+      const boxes = document.querySelectorAll(".check-box");
+      const savedChecks = JSON.parse(
+        localStorage.getItem(CHECKLIST_KEY) || "[]"
+      );
+
+      boxes.forEach((box, i) => {
+        if (savedChecks[i]) box.checked = true;
+
+        box.addEventListener("change", () => {
+          localStorage.setItem(
+            CHECKLIST_KEY,
+            JSON.stringify([...boxes].map((b) => b.checked))
+          );
+        });
+      });
+    </script>
+
+    <!-- ============ STYLES ============ -->
+    <style>
+      /* Minimal helper styles - the rest is all Tailwind */
+      .inline-code {
+        display: inline-block;
+        padding: 2px 6px;
+        border-radius: 6px;
+        background: rgba(99, 102, 241, 0.1);
+        color: #4f46e5;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.85em;
+        direction: ltr;
+      }
+      .dark .inline-code {
+        background: rgba(129, 140, 248, 0.15);
+        color: #a5b4fc;
+      }
+
+      .code-block {
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid #e2e8f0;
+        background: #ffffff;
+      }
+      .dark .code-block {
+        border-color: #1e293b;
+        background: #0f172a;
+      }
+      .code-label {
+        padding: 8px 16px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        color: #64748b;
+        background: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
+        direction: ltr;
+      }
+      .dark .code-label {
+        color: #94a3b8;
+        background: rgba(30, 41, 59, 0.5);
+        border-color: #1e293b;
+      }
+      .code-block pre {
+        padding: 16px;
+        overflow-x: auto;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13px;
+        line-height: 1.7;
+        direction: ltr;
+        text-align: left;
+        margin: 0;
+      }
+      .code-block code {
+        font-family: inherit;
+        color: #0f172a;
+      }
+      .dark .code-block code {
+        color: #e2e8f0;
+      }
+
+      /* Simple syntax highlighting */
+      .c-tag {
+        color: #e11d48;
+      }
+      .c-attr {
+        color: #7c3aed;
+      }
+      .c-str {
+        color: #16a34a;
+      }
+      .c-key {
+        color: #2563eb;
+        font-weight: 600;
+      }
+      .c-fn {
+        color: #0891b2;
+      }
+      .c-com {
+        color: #94a3b8;
+        font-style: italic;
+      }
+      .dark .c-tag {
+        color: #fb7185;
+      }
+      .dark .c-attr {
+        color: #c4b5fd;
+      }
+      .dark .c-str {
+        color: #86efac;
+      }
+      .dark .c-key {
+        color: #93c5fd;
+      }
+      .dark .c-fn {
+        color: #67e8f9;
+      }
+      .dark .c-com {
+        color: #64748b;
+      }
+
+      /* Callouts */
+      .callout {
+        border-radius: 12px;
+        padding: 16px;
+        border-left: 4px solid;
+      }
+      .callout-tip {
+        background: rgba(59, 130, 246, 0.08);
+        border-color: #3b82f6;
+      }
+      .callout-warn {
+        background: rgba(245, 158, 11, 0.08);
+        border-color: #f59e0b;
+      }
+      .callout-success {
+        background: rgba(34, 197, 94, 0.08);
+        border-color: #22c55e;
+      }
+      .dark .callout-tip {
+        background: rgba(59, 130, 246, 0.12);
+      }
+      .dark .callout-warn {
+        background: rgba(245, 158, 11, 0.12);
+      }
+      .dark .callout-success {
+        background: rgba(34, 197, 94, 0.12);
+      }
+
+      /* Section cards */
+      .section-card {
+        padding: 24px;
+        margin-bottom: 32px;
+        border-radius: 16px;
+        background: white;
+        border: 1px solid #e2e8f0;
+      }
+      .dark .section-card {
+        background: #0f172a;
+        border-color: #1e293b;
+      }
+      .section-num {
+        display: inline-block;
+        padding: 4px 10px;
+        margin-bottom: 8px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #6366f1;
+        background: rgba(99, 102, 241, 0.1);
+        border-radius: 6px;
+        font-family: "JetBrains Mono", monospace;
+      }
+
+      /* Checklist items */
+      .check-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 12px 16px;
+        border-radius: 10px;
+        background: white;
+        border: 1px solid #e2e8f0;
+        cursor: pointer;
+        transition: all 0.15s;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+      .dark .check-item {
+        background: #0f172a;
+        border-color: #1e293b;
+      }
+      .check-item:hover {
+        border-color: #6366f1;
+      }
+      .check-item input[type="checkbox"] {
+        margin-top: 2px;
+        width: 18px;
+        height: 18px;
+        accent-color: #6366f1;
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+      .check-item:has(input:checked) {
+        background: rgba(34, 197, 94, 0.05);
+        border-color: rgba(34, 197, 94, 0.4);
+        text-decoration: line-through;
+        opacity: 0.7;
+      }
+      .dark .check-item:has(input:checked) {
+        background: rgba(34, 197, 94, 0.08);
+      }
+
+      /* Smooth scroll offset for sticky header */
+      section[id] {
+        scroll-margin-top: 80px;
+      }
+    </style>
+  </body>
+</html>
